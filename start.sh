@@ -1,15 +1,21 @@
 #!/bin/bash
 set -e
 
-# Force reinstall to avoid cached wrong versions
 pip install --no-cache-dir -r requirements.txt
 
-# Start API server in background
+# Start API
 uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} &
 API_PID=$!
 
-# Wait for API to be ready
-sleep 3
+# Wait until API is ready
+echo "Waiting for API..."
+for i in $(seq 1 30); do
+    if curl -sf http://localhost:${PORT:-8000}/health > /dev/null 2>&1; then
+        echo "API ready ✅"
+        break
+    fi
+    sleep 1
+done
 
 # Start bot
 python bot.py &
