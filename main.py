@@ -2,7 +2,7 @@ import os, asyncio, logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 import aiosqlite
 from pydantic import BaseModel
 from typing import Optional
@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 DB = os.environ.get("DB_PATH", "focusflow.db")
+APP_HTML = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.html")
 
 # ═══ DB INIT ═══
 async def init_db():
@@ -202,3 +203,20 @@ async def get_summary():
 @app.get("/health")
 async def health():
     return {"ok": True}
+
+@app.get("/")
+async def serve_app():
+    try:
+        with open(APP_HTML, "r", encoding="utf-8") as f:
+            html = f.read()
+        # Inject Telegram WebApp script and set API_BASE
+        html = html.replace(
+            "</head>",
+            '<script src="https://telegram.org/js/telegram-web-app.js"></script>\n</head>'
+        ).replace(
+            "const API_BASE = localStorage.getItem(\'ff_api_base\') || \'\';",
+            f"const API_BASE = window.location.origin;"
+        )
+        return HTMLResponse(content=html)
+    except FileNotFoundError:
+        return HTMLResponse(content="<h1>App not found</h1>", status_code=404)
