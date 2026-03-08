@@ -12,6 +12,11 @@ PORT     = int(os.environ.get("PORT", "8000"))
 API_BASE = f"http://localhost:{PORT}"
 APP_URL  = os.environ.get("APP_URL", "")
 
+def esc(text: str) -> str:
+    """Escape _ and * for Telegram Markdown"""
+    if not text: return ""
+    return text.replace('_', r'\_').replace('*', r'\*').replace('[', r'\[').replace('`', r'\`')
+
 SLOT_LABEL   = {"focus":"🎯 Focus","reactive":"⚡ Reactive","learn-today":"◎ Tonight","inbox":"📥 Inbox"}
 STATUS_LABEL = {"todo":"Chưa làm","review":"Review","done":"✅ Xong"}
 
@@ -144,13 +149,13 @@ async def handle_update(bot: Bot, update_data: dict):
             if d.startswith("task_done_"):
                 tid  = int(d.split("_")[-1])
                 task = await api_patch(f"/api/tasks/{tid}", {"done": True, "status": "done"})
-                await bot.edit_message_text(f"✅ *{task['name']}* 🎉", chat_id, mid, parse_mode="Markdown")
+                await bot.edit_message_text(f"✅ {esc(task['name'])} 🎉", chat_id, mid, parse_mode="Markdown")
 
             elif d.startswith("slot_"):
                 _, tid, slot = d.split("_", 2)
                 task = await api_patch(f"/api/tasks/{tid}", {"slot": slot, "assigned_date": today_str()})
                 await bot.edit_message_text(
-                    f"✅ *#{task['id']}* {task['name']}\n→ {SLOT_LABEL.get(slot, slot)}",
+                    f"✅ *#{task['id']}* {esc(task['name'])}\n→ {SLOT_LABEL.get(slot, slot)}",
                     chat_id, mid, parse_mode="Markdown")
 
             elif d.startswith("delg_done_"):
@@ -217,14 +222,14 @@ async def handle_update(bot: Bot, update_data: dict):
             task = await api_post("/api/tasks", {"name": name, "slot": "inbox"})
             if "id" not in task:
                 await bot.send_message(chat_id, f"❌ Lỗi tạo task: {task}"); return
-            await bot.send_message(chat_id, f"✅ *#{task['id']}* {task['name']}\n_Chọn slot:_",
+            await bot.send_message(chat_id, f"✅ *#{task['id']}* {esc(task['name'])}\n_Chọn slot:_",
                 parse_mode="Markdown", reply_markup=slot_kb(task['id']))
 
         elif text.lower().startswith("/finish"):
             parts = text.split()
             if len(parts) > 1 and parts[1].isdigit():
                 task = await api_patch(f"/api/tasks/{parts[1]}", {"done": True, "status": "done"})
-                await bot.send_message(chat_id, f"✅ *{task['name']}* 🎉", parse_mode="Markdown")
+                await bot.send_message(chat_id, f"✅ {esc(task['name'])} 🎉", parse_mode="Markdown")
             else:
                 tasks  = await api_get("/api/tasks")
                 active = [t for t in tasks if not t["done"] and t["slot"] in ["focus", "reactive"]]
@@ -238,13 +243,13 @@ async def handle_update(bot: Bot, update_data: dict):
             match = re.match(r"(?:xong|done)\s+#?(\d+)", text, re.I)
             if match:
                 task = await api_patch(f"/api/tasks/{match.group(1)}", {"done": True, "status": "done"})
-                await bot.send_message(chat_id, f"✅ *{task['name']}* 🎉", parse_mode="Markdown")
+                await bot.send_message(chat_id, f"✅ {esc(task['name'])} 🎉", parse_mode="Markdown")
             else:
                 # free text = new task
                 task = await api_post("/api/tasks", {"name": text, "slot": "inbox"})
                 if "id" not in task:
                     await bot.send_message(chat_id, f"❌ Lỗi tạo task: {task}"); return
-                await bot.send_message(chat_id, f"✅ *#{task['id']}* {task['name']}\n_Chọn slot:_",
+                await bot.send_message(chat_id, f"✅ *#{task['id']}* {esc(task['name'])}\n_Chọn slot:_",
                     parse_mode="Markdown", reply_markup=slot_kb(task['id']))
 
     except Exception as e:
