@@ -8,9 +8,8 @@ logger = logging.getLogger(__name__)
 
 TOKEN    = os.environ["BOT_TOKEN"]
 CHAT_ID  = int(os.environ["CHAT_ID"])
-API_BASE = os.environ.get("API_BASE", "http://localhost:8000")
+API_BASE = os.environ.get("API_BASE_INTERNAL", "http://localhost:8000")
 APP_URL  = os.environ.get("APP_URL", "")
-
 SLOT_LABEL = {"focus":"🎯 Focus","reactive":"⚡ Reactive","learn-today":"◎ Tonight","inbox":"📥 Inbox"}
 STATUS_LABEL = {"todo":"Chưa làm","review":"Review","done":"✅ Xong"}
 
@@ -21,7 +20,10 @@ async def api_get(path):
 
 async def api_post(path, data):
     async with httpx.AsyncClient(timeout=10) as c:
-        r = await c.post(f"{API_BASE}{path}", json=data); return r.json()
+        r = await c.post(f"{API_BASE}{path}", json=data)
+        result = r.json()
+        logger.info(f"api_post {path} -> {result}")
+        return result
 
 async def api_patch(path, data):
     async with httpx.AsyncClient(timeout=10) as c:
