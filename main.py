@@ -181,7 +181,7 @@ async def get_summary():
         reactive = await (await db.execute(
             "SELECT id,name,grp,status FROM tasks WHERE slot='reactive' AND done=0")).fetchall()
         done_today = await (await db.execute(
-            "SELECT name FROM tasks WHERE done=1 AND (assigned_date=? OR deadline=?)")).fetchall()
+            "SELECT name FROM tasks WHERE done=1 AND (assigned_date=? OR deadline=?)", (today, today))).fetchall()
         overdue = await (await db.execute(
             "SELECT id,name,deadline FROM tasks WHERE done=0 AND deadline < ? AND slot!='inbox'",
             (today,))).fetchall()
