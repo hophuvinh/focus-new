@@ -17,7 +17,7 @@ def esc(text: str) -> str:
     if not text: return ""
     return text.replace('_', r'\_').replace('*', r'\*').replace('[', r'\[').replace('`', r'\`')
 
-SLOT_LABEL   = {"focus":"🎯 Focus","reactive":"⚡ Reactive","learn-today":"◎ Tonight","inbox":"📥 Inbox"}
+SLOT_LABEL   = {"focus-am":"🎯 Focus sáng","focus-pm":"🎯 Focus chiều","reactive-am":"⚡ Reactive sáng","reactive-pm":"⚡ Reactive chiều","learn-today":"◎ Tonight","inbox":"📥 Inbox"}
 STATUS_LABEL = {"todo":"Chưa làm","review":"Review","done":"✅ Xong"}
 
 # ═══ API ═══
@@ -51,8 +51,9 @@ def app_kb():
 
 def slot_kb(task_id):
     return InlineKeyboardMarkup([[
-        InlineKeyboardButton("🎯 Focus",    callback_data=f"slot_{task_id}_focus"),
-        InlineKeyboardButton("⚡ Reactive", callback_data=f"slot_{task_id}_reactive"),
+        InlineKeyboardButton("🎯 Sáng",  callback_data=f"slot_{task_id}_focus-am"),
+        InlineKeyboardButton("🎯 Chiều", callback_data=f"slot_{task_id}_focus-pm"),
+        InlineKeyboardButton("⚡ Reactive", callback_data=f"slot_{task_id}_reactive-am"),
         InlineKeyboardButton("◎ Learn",     callback_data=f"slot_{task_id}_learn-today"),
     ]])
 
@@ -78,7 +79,7 @@ async def reactive_nudge(bot: Bot):
         s = await api_get("/api/summary")
         reactive = s.get("reactive", [])
         overdue  = s.get("overdue", [])
-        msg = "⚡ *Giờ Reactive — 13:30*\n\n"
+        msg = "⚡ *Reactive chiều — 16:00*\n\n"
         if reactive:
             msg += f"*Task cần xử lý ({len(reactive)}):*\n" + "".join(f"  • {t['name']}\n" for t in reactive)
         else:
@@ -153,6 +154,12 @@ async def handle_update(bot: Bot, update_data: dict):
 
             elif d.startswith("slot_"):
                 _, tid, slot = d.split("_", 2)
+                if slot in ["focus-am","focus-pm"]:
+                    tasks = await api_get("/api/tasks")
+                    focus_count = sum(1 for t in tasks if t["slot"] in ["focus-am","focus-pm"] and not t["done"] and str(t["id"]) != tid)
+                    if focus_count >= 3:
+                        await bot.answer_callback_query(cq["id"], "⚠️ Tối đa 3 task Focus mỗi ngày!", show_alert=True)
+                        return
                 task = await api_patch(f"/api/tasks/{tid}", {"slot": slot, "assigned_date": today_str()})
                 await bot.edit_message_text(
                     f"✅ *#{task['id']}* {esc(task['name'])}\n→ {SLOT_LABEL.get(slot, slot)}",
@@ -189,7 +196,7 @@ async def handle_update(bot: Bot, update_data: dict):
 
         elif text.startswith("/reactive"):
             tasks = await api_get("/api/tasks")
-            r = [t for t in tasks if t["slot"] == "reactive" and not t["done"]]
+            r = [t for t in tasks if t["slot"] in ["reactive-am","reactive-pm"] and not t["done"]]
             m = f"⚡ *Reactive ({len(r)}):*\n\n" + "".join(f"`#{t['id']}` {t['name']}\n" for t in r) if r else "Không có task reactive"
             await bot.send_message(chat_id, m, parse_mode="Markdown")
 
@@ -232,7 +239,7 @@ async def handle_update(bot: Bot, update_data: dict):
                 await bot.send_message(chat_id, f"✅ {esc(task['name'])} 🎉", parse_mode="Markdown")
             else:
                 tasks  = await api_get("/api/tasks")
-                active = [t for t in tasks if not t["done"] and t["slot"] in ["focus", "reactive"]]
+                active = [t for t in tasks if not t["done"] and t["slot"] in ["focus-am","focus-pm","reactive-am","reactive-pm"]]
                 if not active:
                     await bot.send_message(chat_id, "Không có task đang active"); return
                 kb = InlineKeyboardMarkup([[InlineKeyboardButton(f"✓ #{t['id']} {t['name'][:35]}", callback_data=f"task_done_{t['id']}")] for t in active])
@@ -266,7 +273,7 @@ async def run_scheduler(bot: Bot):
         key    = vn_now.strftime("%H:%M")
         if key == "00:00": sent.clear()
 
-        jobs = {"07:30": morning_nudge, "13:30": reactive_nudge,
+        jobs = {"08:20": morning_nudge, "16:00": reactive_nudge,
                 "17:00": delegation_check, "21:00": eod_summary}
         if key in jobs and key not in sent:
             sent.add(key)

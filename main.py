@@ -121,10 +121,10 @@ async def update_delegated(item_id: int, update: DelegatedUpdate):
 @app.get("/api/summary")
 async def get_summary():
     today = datetime.now().strftime("%Y-%m-%d")
-    focus    = await db.execute("SELECT id,name,grp,status FROM tasks WHERE slot='focus' AND done=0")
-    reactive = await db.execute("SELECT id,name,grp,status FROM tasks WHERE slot='reactive' AND done=0")
+    focus    = await db.execute("SELECT id,name,grp,status FROM tasks WHERE slot IN ('focus-am','focus-pm') AND done=0")
+    reactive = await db.execute("SELECT id,name,grp,status FROM tasks WHERE slot IN ('reactive-am','reactive-pm') AND done=0")
     done_today = await db.execute("SELECT name FROM tasks WHERE done=1 AND (assigned_date=? OR deadline=?)", [today, today])
-    overdue  = await db.execute("SELECT id,name,deadline FROM tasks WHERE done=0 AND deadline < ? AND slot!='inbox'", [today])
+    overdue  = await db.execute("SELECT id,name,deadline FROM tasks WHERE done=0 AND deadline < ? AND slot NOT IN ('inbox','learn-today')", [today])
     delegated = await db.execute("SELECT id,name,who,deadline FROM delegated WHERE status='watching'")
     urgent_delegated = await db.execute("SELECT id,name,who,deadline FROM delegated WHERE status='watching' AND deadline <= ?", [today])
     for r in focus+reactive+overdue+delegated+urgent_delegated:
