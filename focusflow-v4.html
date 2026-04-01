@@ -824,30 +824,56 @@ body {
 
       <!-- slots -->
       <div class="day-slots">
-          <!-- Focus -->
-          <div class="day-slot-section" id="slot-focus">
+          <!-- Reactive Sáng -->
+          <div class="day-slot-section" id="slot-reactive-am">
             <div class="day-slot-head"
-              ondragover="dayDragOver(event,'focus')" ondrop="dayDrop(event,'focus')" ondragleave="dayDragLeave(event)">
-              <span class="day-slot-icon">🎯</span>
-              <span class="day-slot-name">Deep Focus</span>
-              <span class="day-slot-time">09:00 – 12:00</span>
-              <span class="kanban-col-count" id="dkc-focus">0</span>
+              ondragover="dayDragOver(event,'reactive-am')" ondrop="dayDrop(event,'reactive-am')" ondragleave="dayDragLeave(event)">
+              <span class="day-slot-icon">⚡</span>
+              <span class="day-slot-name">Reactive sáng</span>
+              <span class="day-slot-time">08:30 – 09:30</span>
+              <span class="kanban-col-count" id="dkc-reactive-am">0</span>
             </div>
-            <div class="kanban-cards day-slot-drop" id="dkk-focus"
-              ondragover="dayDragOver(event,'focus')" ondrop="dayDrop(event,'focus')" ondragleave="dayDragLeave(event)"></div>
+            <div class="kanban-cards day-slot-drop" id="dkk-reactive-am"
+              ondragover="dayDragOver(event,'reactive-am')" ondrop="dayDrop(event,'reactive-am')" ondragleave="dayDragLeave(event)"></div>
           </div>
 
-          <!-- Reactive -->
-          <div class="day-slot-section" id="slot-reactive">
+          <!-- Focus Sáng -->
+          <div class="day-slot-section" id="slot-focus-am">
             <div class="day-slot-head"
-              ondragover="dayDragOver(event,'reactive')" ondrop="dayDrop(event,'reactive')" ondragleave="dayDragLeave(event)">
-              <span class="day-slot-icon">⚡</span>
-              <span class="day-slot-name">Reactive</span>
-              <span class="day-slot-time">13:30 – 17:00</span>
-              <span class="kanban-col-count" id="dkc-reactive">0</span>
+              ondragover="dayDragOver(event,'focus-am')" ondrop="dayDrop(event,'focus-am')" ondragleave="dayDragLeave(event)">
+              <span class="day-slot-icon">🎯</span>
+              <span class="day-slot-name">Focus sáng</span>
+              <span class="day-slot-time">09:30 – 12:00</span>
+              <span class="kanban-col-count" id="dkc-focus-am">0</span>
             </div>
-            <div class="kanban-cards day-slot-drop" id="dkk-reactive"
-              ondragover="dayDragOver(event,'reactive')" ondrop="dayDrop(event,'reactive')" ondragleave="dayDragLeave(event)"></div>
+            <div class="kanban-cards day-slot-drop" id="dkk-focus-am"
+              ondragover="dayDragOver(event,'focus-am')" ondrop="dayDrop(event,'focus-am')" ondragleave="dayDragLeave(event)"></div>
+          </div>
+
+          <!-- Focus Chiều -->
+          <div class="day-slot-section" id="slot-focus-pm">
+            <div class="day-slot-head"
+              ondragover="dayDragOver(event,'focus-pm')" ondrop="dayDrop(event,'focus-pm')" ondragleave="dayDragLeave(event)">
+              <span class="day-slot-icon">🎯</span>
+              <span class="day-slot-name">Focus chiều</span>
+              <span class="day-slot-time">13:30 – 16:00</span>
+              <span class="kanban-col-count" id="dkc-focus-pm">0</span>
+            </div>
+            <div class="kanban-cards day-slot-drop" id="dkk-focus-pm"
+              ondragover="dayDragOver(event,'focus-pm')" ondrop="dayDrop(event,'focus-pm')" ondragleave="dayDragLeave(event)"></div>
+          </div>
+
+          <!-- Reactive Chiều -->
+          <div class="day-slot-section" id="slot-reactive-pm">
+            <div class="day-slot-head"
+              ondragover="dayDragOver(event,'reactive-pm')" ondrop="dayDrop(event,'reactive-pm')" ondragleave="dayDragLeave(event)">
+              <span class="day-slot-icon">⚡</span>
+              <span class="day-slot-name">Reactive chiều</span>
+              <span class="day-slot-time">16:00 – 17:00</span>
+              <span class="kanban-col-count" id="dkc-reactive-pm">0</span>
+            </div>
+            <div class="kanban-cards day-slot-drop" id="dkk-reactive-pm"
+              ondragover="dayDragOver(event,'reactive-pm')" ondrop="dayDrop(event,'reactive-pm')" ondragleave="dayDragLeave(event)"></div>
           </div>
 
           <!-- Tonight -->
@@ -1000,7 +1026,8 @@ body {
         <label class="fl">Slot hôm nay</label>
         <select class="fs" id="t-slot">
           <option value="inbox">Chưa xếp</option>
-          <option value="focus">🎯 Deep Focus</option>
+          <option value="focus-am">🎯 Focus sáng</option>
+          <option value="focus-pm">🎯 Focus chiều</option>
           <option value="reactive">⚡ Reactive</option>
           <option value="learn-today">◎ Learn tonight</option>
         </select>
@@ -1112,7 +1139,8 @@ body {
         <label class="fl">Slot hôm nay</label>
         <select class="fs" id="e-slot">
           <option value="inbox">Chưa xếp</option>
-          <option value="focus">🎯 Deep Focus</option>
+          <option value="focus-am">🎯 Focus sáng</option>
+          <option value="focus-pm">🎯 Focus chiều</option>
           <option value="reactive">⚡ Reactive</option>
           <option value="learn-today">◎ Learn tonight</option>
         </select>
@@ -1220,7 +1248,7 @@ if(localStorage.getItem('ffv4_seed_version') !== SEED_VERSION){
 function checkCarryover() {
   const stale = tasks.filter(t =>
     !t.done &&
-    ['focus','reactive','learn-today'].includes(t.slot) &&
+    ['focus-am','focus-pm','reactive-am','reactive-pm','learn-today'].includes(t.slot) &&
     t.assignedDate && t.assignedDate < td()
   );
   if (!stale.length) return;
@@ -1334,9 +1362,9 @@ function showApiStatus(state) {
 
 function seedTasks(){return[
   // HÔM NAY — FOCUS (max 3)
-  {id:101,name:'Concept direction x3 — WeChoice Awards 2025',group:'kv',source:'self',deadline:td(2),slot:'focus',assignedDate:td(-1),status:'todo',done:false},
-  {id:102,name:'Wireframe desktop trang chủ VCCorp — above fold',group:'uiux',source:'self',deadline:td(4),slot:'focus',assignedDate:td(-1),status:'review',done:false},
-  {id:103,name:'Duyệt moodboard Samsung Galaxy S25 Ultra campaign',group:'kv',source:'self',deadline:td(1),slot:'focus',assignedDate:td(-1),status:'todo',done:false},
+  {id:101,name:'Concept direction x3 — WeChoice Awards 2025',group:'kv',source:'self',deadline:td(2),slot:'focus-am',assignedDate:td(-1),status:'todo',done:false},
+  {id:102,name:'Wireframe desktop trang chủ VCCorp — above fold',group:'uiux',source:'self',deadline:td(4),slot:'focus-am',assignedDate:td(-1),status:'review',done:false},
+  {id:103,name:'Duyệt moodboard Samsung Galaxy S25 Ultra campaign',group:'kv',source:'self',deadline:td(1),slot:'focus-pm',assignedDate:td(-1),status:'todo',done:false},
   // HÔM NAY — REACTIVE
   {id:104,name:'Feedback banner editorial tháng 3 — bộ 6 tấm',group:'editorial',source:'self',deadline:td(),slot:'reactive',assignedDate:td(-1),status:'review',done:false},
   {id:105,name:'Approve social assets Green Voice final round',group:'reactive',source:'self',deadline:td(),slot:'reactive',assignedDate:td(-1),status:'todo',done:false},
@@ -1414,7 +1442,7 @@ function render(){
 }
 
 function renderNav(){
-  const f=tasks.filter(t=>t.slot==='focus'&&!t.done).length;
+  const f=tasks.filter(t=>['focus-am','focus-pm'].includes(t.slot)&&!t.done).length;
   const r=tasks.filter(t=>t.slot==='reactive'&&!t.done).length;
   const ib=tasks.filter(t=>!t.done).length;
   const due=delegated.filter(d=>d.status==='watching'&&dl(d.deadline)<=1).length;
@@ -1439,7 +1467,7 @@ function renderLearnToday(){ /* handled by renderDayKanban */ }
 function renderDayKanban(){
   const f=t=>(dayTagFilter==='all'||t.group===dayTagFilter);
   const inbox   = tasks.filter(t=>t.slot==='inbox'&&!t.done&&f(t)).sort((a,b)=>PRIO[b.group]-PRIO[a.group]);
-  const focus   = tasks.filter(t=>t.slot==='focus'&&!t.done&&f(t)).sort((a,b)=>PRIO[b.group]-PRIO[a.group]);
+  const focus   = tasks.filter(t=>['focus-am','focus-pm'].includes(t.slot)&&!t.done&&f(t)).sort((a,b)=>PRIO[b.group]-PRIO[a.group]);
   const reactive= tasks.filter(t=>t.slot==='reactive'&&!t.done&&f(t)).sort((a,b)=>(SRC_PRIO[b.source]||0)-(SRC_PRIO[a.source]||0));
   const learn   = tasks.filter(t=>t.slot==='learn-today'&&!t.done&&f(t));
   const review  = tasks.filter(t=>t.status==='review'&&!t.done).length;
@@ -1487,9 +1515,9 @@ function dayDrop(e,slot){
   if(!dayDragId)return;
   const t=tasks.find(t=>t.id===dayDragId); if(!t)return;
   if(slot==='inbox'){ t.slot='inbox'; t.done=false; t.assignedDate=null; if(t.status==='done')t.status='todo'; }
-  else if(slot==='focus'){
-    if(tasks.filter(x=>x.slot==='focus'&&!x.done&&x.id!==t.id).length>=3){alert('Max 3 task trong Focus!');return;}
-    t.slot='focus'; t.done=false; t.assignedDate=td(); if(t.status==='done')t.status='todo';
+  else if(['focus-am','focus-pm'].includes(slot)){
+    if(tasks.filter(x=>['focus-am','focus-pm'].includes(x.slot)&&!x.done&&x.id!==t.id).length>=3){alert('Max 3 task trong Focus!');return;}
+    t.slot=slot; t.done=false; t.assignedDate=td(); if(t.status==='done')t.status='todo';
   }
   else { t.slot=slot; t.done=false; t.assignedDate=td(); if(t.status==='done')t.status='todo'; }
   save(); render();
@@ -1503,9 +1531,11 @@ function setDayTagFilter(f,btn){
 
 // ── REAL-TIME SLOT HIGHLIGHT ──
 const SLOT_HOURS = {
-  focus:    { start: 9,    end: 12   },
-  reactive: { start: 13.5, end: 17   },
-  learn:    { start: 20,   end: 21.5 },
+  'reactive-am': { start: 8.5,  end: 9.5  },
+  'focus-am':    { start: 9.5,  end: 12   },
+  'focus-pm':    { start: 13.5, end: 16   },
+  'reactive-pm': { start: 16,   end: 17   },
+  'learn':       { start: 20,   end: 21.5 },
 };
 
 function updateSlotHighlight() {
@@ -1516,7 +1546,7 @@ function updateSlotHighlight() {
     if (h >= range.start && h < range.end) { activeSlot = slot; break; }
   }
 
-  const slots = ['focus','reactive','learn'];
+  const slots = ['reactive-am','focus-am','focus-pm','reactive-pm','learn'];
   slots.forEach(slot => {
     const el = document.getElementById('slot-' + slot);
     if (!el) return;
@@ -1562,7 +1592,7 @@ function taskCard(t,opts={}){
       <div class="card-check ${t.done?'checked':''}" onclick="toggleDone(${t.id})">${t.done?'✓':''}</div>
       <div class="card-name ${t.done?'struck':''}">${t.name}</div>
       <div class="card-actions">
-        ${!t.done&&(t.slot==='focus')?`<button class="card-action" onclick="startFocus(${t.id})" title="Focus mode">▶</button>`:''}
+        ${!t.done&&(['focus-am','focus-pm'].includes(t.slot))?`<button class="card-action" onclick="startFocus(${t.id})" title="Focus mode">▶</button>`:''}
         ${opts.showMove?`<button class="card-action" onclick="moveToFocus(${t.id})" title="→ Focus" style="font-size:10px;font-weight:700">F</button>
           <button class="card-action" onclick="moveToReactive(${t.id})" title="→ Reactive" style="font-size:10px;font-weight:700">R</button>`:''}
         ${opts.showToday?`<button class="card-action" onclick="moveToLearnToday(${t.id})" title="→ Hôm nay" style="font-size:10px;font-weight:700">→</button>`:''}
@@ -1601,8 +1631,8 @@ function listRow(t){
   const slotBadge=t.slot&&t.slot!=='inbox'
     ?`<span class="k-slot-badge" style="cursor:pointer" onclick="removeSlot(${t.id})">${SLOT_LABEL[t.slot]||''} ×</span>`
     :`<div class="slot-picker">
-        <button class="slot-pick-btn" onclick="assignSlot(${t.id},'focus')" title="Deep Focus">🎯</button>
-        <button class="slot-pick-btn" onclick="assignSlot(${t.id},'reactive')" title="Reactive">⚡</button>
+        <button class="slot-pick-btn" onclick="assignSlot(${t.id},'focus-am')" title="Deep Focus">🎯</button>
+        <button class="slot-pick-btn" onclick="assignSlot(${t.id},'reactive-am')" title="Reactive">⚡</button>
         <button class="slot-pick-btn" onclick="assignSlot(${t.id},'learn-today')" title="Learn tonight">◎</button>
       </div>`;
   return `<div class="list-row">
@@ -1620,7 +1650,7 @@ function listRow(t){
 
 function assignSlot(id, slot){
   const t=tasks.find(t=>t.id===id); if(!t)return;
-  if(slot==='focus'&&tasks.filter(x=>x.slot==='focus'&&!x.done&&x.id!==id).length>=3){
+  if(['focus-am','focus-pm'].includes(slot)&&tasks.filter(x=>['focus-am','focus-pm'].includes(x.slot)&&!x.done&&x.id!==id).length>=3){
     alert('Focus đã đủ 3 task rồi!');return;
   }
   t.slot=slot; t.assignedDate=td();
@@ -1745,15 +1775,15 @@ function kDrop(e,col){
     t.done=false;if(t.status==='done')t.status='todo';
     // assign to focus if space, else reactive
     if(t.slot==='inbox'){
-      const focusCount=tasks.filter(x=>x.slot==='focus'&&!x.done).length;
-      t.slot=focusCount<3?'focus':'reactive';
+      const focusCount=tasks.filter(x=>['focus-am','focus-pm'].includes(x.slot)&&!x.done).length;
+      t.slot=focusCount<3?'focus-am':'reactive-am';
     }
   }
   save();render();
 }
 
 let dragId=null;
-const SLOT_LABEL={'focus':'🎯 Focus','reactive':'⚡ Reactive','learn-today':'◎ Tonight','inbox':'–'};
+const SLOT_LABEL={'focus-am':'🎯 Focus sáng','focus-pm':'🎯 Focus chiều','reactive-am':'⚡ Reactive sáng','reactive-pm':'⚡ Reactive chiều','learn-today':'◎ Tonight','inbox':'–'};
 
 function setTagFilter(f,btn){
   tagFilter=f;
@@ -1876,8 +1906,8 @@ function toggleProject(id){const p=projects.find(p=>p.id===id);if(p)p.expanded=!
 function deleteTask(id){const t=tasks.find(x=>x.id===id);tasks=tasks.filter(x=>x.id!==id);save();render();if(API_BASE&&t?._serverId)apiDelete(`/api/tasks/${t._serverId}`);}
 
 function moveToFocus(id){
-  if(tasks.filter(t=>t.slot==='focus'&&!t.done).length>=3){alert('Max 3 task focus!');return;}
-  const t=tasks.find(t=>t.id===id);if(t){t.slot='focus';save();render();go('today',document.querySelector('.nav-item'));}
+  if(tasks.filter(t=>['focus-am','focus-pm'].includes(t.slot)&&!t.done).length>=3){alert('Max 3 task focus!');return;}
+  const t=tasks.find(t=>t.id===id);if(t){t.slot='focus-am';save();render();go('today',document.querySelector('.nav-item'));}
 }
 function moveToReactive(id){const t=tasks.find(t=>t.id===id);if(t){t.slot='reactive';save();render();go('today',document.querySelector('.nav-item'));}}
 function moveToLearnToday(id){const t=tasks.find(t=>t.id===id);if(t){t.slot='learn-today';save();render();go('today',document.querySelector('.nav-item'));}}
@@ -1885,11 +1915,11 @@ function moveToLearnToday(id){const t=tasks.find(t=>t.id===id);if(t){t.slot='lea
 function milestoneToToday(pid,mid){
   const p=projects.find(p=>p.id===pid);if(!p)return;
   const m=p.milestones.find(m=>m.id===mid);if(!m)return;
-  const focusCount=tasks.filter(t=>t.slot==='focus'&&!t.done).length;
-  const slot=focusCount<3?'focus':'inbox';
+  const focusCount=tasks.filter(t=>['focus-am','focus-pm'].includes(t.slot)&&!t.done).length;
+  const slot=focusCount<3?'focus-am':'inbox';
   tasks.unshift({id:Date.now(),name:m.name,group:p.group,source:'self',deadline:m.deadline,slot,status:m.status==='done'?'done':'todo',done:false,fromProject:p.name});
   save();render();
-  if(slot==='focus')go('today',document.querySelector('.nav-item'));
+  if(['focus-am','focus-pm'].includes(slot))go('today',document.querySelector('.nav-item'));
   else alert('Focus đã đầy (3/3) — task đã vào Inbox');
 }
 
@@ -1944,7 +1974,7 @@ function openTaskModal(slot='inbox'){
   document.getElementById('ai-btn').className='btn-ai';
   document.getElementById('task-fields').style.opacity='0.4';
   document.getElementById('task-fields').style.pointerEvents='none';
-  const slotMap={'focus':'focus','reactive':'reactive','learn-today':'learn-today','learn':'learn-today','inbox':'inbox'};
+  const slotMap={'focus-am':'focus-am','focus-pm':'focus-pm','reactive-am':'reactive-am','reactive-pm':'reactive-pm','learn-today':'learn-today','learn':'learn-today','inbox':'inbox'};
   document.getElementById('t-slot').value=slotMap[slot]||'inbox';
   if(slot==='learn-today')document.getElementById('t-group').value='learn';
   document.getElementById('taskModal').classList.add('on');
@@ -2037,7 +2067,7 @@ async function classifyTask(){
   hint.className='ai-hint'; hint.textContent='Đang phân tích...';
 
   const now=new Date(); const h=now.getHours();
-  const currentBlock = h>=9&&h<12?'focus': h>=13.5&&h<17?'reactive': h>=20&&h<21.5?'learn-today':'inbox';
+  const currentBlock = h>=8.5&&h<9.5?'reactive-am': h>=9.5&&h<12?'focus-am': h>=13.5&&h<16?'focus-pm': h>=16&&h<17?'reactive-pm': h>=20&&h<21.5?'learn-today':'inbox';
 
   const prompt=`Bạn là trợ lý phân loại task cho một Design Lead tại công ty truyền thông ở Việt Nam.
 
@@ -2094,11 +2124,11 @@ Trả về JSON duy nhất, không giải thích:
   }
 }
 function closeTaskModal(){document.getElementById('taskModal').classList.remove('on');}
-function autoSlot(){const g=document.getElementById('t-group').value;const s=document.getElementById('t-slot');if(g==='learn')s.value='learn-today';else if(['kv','uiux','internal'].includes(g))s.value='focus';else s.value='reactive';}
+function autoSlot(){const g=document.getElementById('t-group').value;const s=document.getElementById('t-slot');if(g==='learn')s.value='learn-today';else if(['kv','uiux','internal'].includes(g))s.value='focus-am';else s.value='reactive-am';}
 async function saveTask(){
   const name=document.getElementById('t-name').value.trim();if(!name)return;
   const slot=document.getElementById('t-slot').value;
-  if(slot==='focus'&&tasks.filter(t=>t.slot==='focus'&&!t.done).length>=3){alert('Max 3 focus tasks!');return;}
+  if(['focus-am','focus-pm'].includes(slot)&&tasks.filter(t=>['focus-am','focus-pm'].includes(t.slot)&&!t.done).length>=3){alert('Max 3 focus tasks!');return;}
   const assignedDate = slot!=='inbox' ? td() : null;
   const newTask={id:Date.now(),name,group:document.getElementById('t-group').value,source:'self',
     deadline:document.getElementById('t-deadline').value||null,
