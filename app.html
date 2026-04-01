@@ -1516,7 +1516,7 @@ function dayDrop(e,slot){
   const t=tasks.find(t=>t.id===dayDragId); if(!t)return;
   if(slot==='inbox'){ t.slot='inbox'; t.done=false; t.assignedDate=null; if(t.status==='done')t.status='todo'; }
   else if(['focus-am','focus-pm'].includes(slot)){
-    if(tasks.filter(x=>x.['focus-am','focus-pm'].includes(slot)&&!x.done&&x.id!==t.id).length>=3){alert('Max 3 task trong Focus!');return;}
+    if(tasks.filter(x=>['focus-am','focus-pm'].includes(x.slot)&&!x.done&&x.id!==t.id).length>=3){alert('Max 3 task trong Focus!');return;}
     t.slot=slot; t.done=false; t.assignedDate=td(); if(t.status==='done')t.status='todo';
   }
   else { t.slot=slot; t.done=false; t.assignedDate=td(); if(t.status==='done')t.status='todo'; }
@@ -1650,7 +1650,7 @@ function listRow(t){
 
 function assignSlot(id, slot){
   const t=tasks.find(t=>t.id===id); if(!t)return;
-  if(['focus-am','focus-pm'].includes(slot)&&tasks.filter(x=>x.['focus-am','focus-pm'].includes(slot)&&!x.done&&x.id!==id).length>=3){
+  if(['focus-am','focus-pm'].includes(slot)&&tasks.filter(x=>['focus-am','focus-pm'].includes(x.slot)&&!x.done&&x.id!==id).length>=3){
     alert('Focus đã đủ 3 task rồi!');return;
   }
   t.slot=slot; t.assignedDate=td();
@@ -1775,7 +1775,7 @@ function kDrop(e,col){
     t.done=false;if(t.status==='done')t.status='todo';
     // assign to focus if space, else reactive
     if(t.slot==='inbox'){
-      const focusCount=tasks.filter(x=>x.['focus-am','focus-pm'].includes(slot)&&!x.done).length;
+      const focusCount=tasks.filter(x=>['focus-am','focus-pm'].includes(x.slot)&&!x.done).length;
       t.slot=focusCount<3?'focus-am':'reactive-am';
     }
   }
